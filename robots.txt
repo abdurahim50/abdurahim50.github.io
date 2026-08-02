@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# NOTE: robots.txt is only honoured at the domain root, so this file at
+# /portfolio/robots.txt is effectively ignored by crawlers. It's kept for
+# completeness. To get the sitemap indexed, submit it directly in Google
+# Search Console:  https://abdurahim50.github.io/portfolio/sitemap.xml
+Sitemap: https://abdurahim50.github.io/portfolio/sitemap.xml

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Abdurahim Yongho — DevSecOps &amp; Cloud Security</title>
+<meta name="description" content="Cybersecurity and IT support specialist building secure, automated infrastructure — Kubernetes, Terraform, and CI/CD pipelines hardened from the first commit. Minneapolis–St. Paul, MN.">
+<link rel="canonical" href="https://abdurahim50.github.io/portfolio/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Abdurahim Yongho — DevSecOps & Cloud Security">
+<meta property="og:description" content="Secure, automated infrastructure: Kubernetes, Terraform, and CI/CD pipelines hardened from the first commit.">
+<meta property="og:url" content="https://abdurahim50.github.io/portfolio/">
+<meta property="og:image" content="https://abdurahim50.github.io/portfolio/assets/img/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<!-- Fonts: delete these two tags to fall back to system fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+
+<!-- Applies the saved theme before first paint so the page never flashes -->
+<script>
+(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- ======================= HEADER =======================
+     This nav block is repeated in every page. If you change a link here,
+     update projects.html, writeups.html, about.html, 404.html and the files
+     in writeups/ too (those use ../ paths).
+     ====================================================== -->
+<header class="site-header">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="nav__brand" href="index.html"><span class="user">abdurahim@sec</span><span class="path">:~$</span></a>
+
+    <ul class="nav__links" id="nav-links">
+      <li><a href="index.html" aria-current="page">Home</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="index.html#homelab">Homelab</a></li>
+      <li><a href="writeups.html">Writing</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="about.html#contact">Contact</a></li>
+    </ul>
+
+    <div class="nav__actions">
+      <button class="icon-btn" data-theme-toggle type="button" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+      <button class="icon-btn nav__toggle" data-nav-toggle type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+  <!-- ======================= HERO ======================= -->
+  <section class="hero">
+    <div class="wrap hero__inner">
+      <div>
+        <p class="eyebrow" style="text-transform:none;letter-spacing:0;font-size:.82rem">
+          // DevSecOps · Cloud &amp; AI Security · Minneapolis–St. Paul, MN
+        </p>
+
+        <h1><span class="grad">Abdurahim Yongho</span></h1>
+
+        <p class="lede">
+          Cybersecurity student and IT support specialist building
+          <strong style="color:var(--text)">secure, automated infrastructure</strong> —
+          Kubernetes clusters, CI/CD pipelines, and cloud environments hardened from
+          the first commit.
+        </p>
+
+        <p class="hero__role">AWS · Terraform · Linux · Docker · Kubernetes · Security+ · Network+</p>
+
+        <div class="btn-row">
+          <a class="btn btn--primary" href="projects.html">
+            View projects
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </a>
+          <a class="btn btn--ghost" href="https://github.com/abdurahim50" rel="noopener">GitHub</a>
+          <a class="btn btn--ghost" href="https://www.linkedin.com/in/abdurahim-yongho/" rel="noopener">LinkedIn</a>
+          <!-- EDIT: drop your CV at assets/resume.pdf, or delete this button -->
+          <a class="btn btn--ghost" href="assets/resume.pdf">Resume ↓</a>
+        </div>
+      </div>
+
+      <!-- Decorative terminal card. Edit the lines freely, or delete the whole aside. -->
+      <aside class="terminal" aria-hidden="true">
+        <div class="terminal__bar">
+          <span class="r"></span><span class="y"></span><span class="g"></span>
+          <span class="title">zsh — whoami</span>
+        </div>
+        <div class="terminal__body">
+          <div><span class="p">$</span> <span class="c">whoami</span></div>
+          <div class="o">abdurahim — devsecops in training</div>
+          <div><span class="p">$</span> <span class="c">ls certifications/</span></div>
+          <div class="o">security+.pem&nbsp; network+.pem&nbsp; aws-saa.inprogress</div>
+          <div><span class="p">$</span> <span class="c">kubectl get nodes -l env=homelab</span></div>
+          <div class="o">3 nodes Ready — kubeadm, self-hosted</div>
+          <div><span class="p">$</span> <span class="c">terraform apply -auto-approve</span><span class="cursor"></span></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ======================= FEATURED PROJECTS ======================= -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="num">01</span>Featured projects</h2>
+        <a href="projects.html">All projects &rarr;</a>
+      </div>
+
+      <!-- Populated from assets/js/projects.js — edit that file, not this markup -->
+      <div class="grid grid--3" id="featured-projects"></div>
+      <noscript>
+        <p class="lede">Enable JavaScript to see the project list, or browse
+        <a href="https://github.com/abdurahim50?tab=repositories">my repositories on GitHub</a>.</p>
+      </noscript>
+    </div>
+  </section>
+
+  <!-- ======================= SKILLS & CERTS ======================= -->
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="num">02</span>Skills &amp; certifications</h2>
+      </div>
+
+      <div class="grid grid--2">
+        <div class="skill-group">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 6 6 0 0 0-11.6-1.6A4 4 0 0 0 6.5 19Z"/></svg>
+            Cloud &amp; IaC
+          </h3>
+          <ul>
+            <li>AWS</li><li>Azure</li><li>GCP</li><li>Terraform</li><li>Ansible</li>
+            <li>Multi-account architecture</li><li>IAM</li><li>VPC design</li>
+          </ul>
+        </div>
+
+        <div class="skill-group">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 6-6 6 6 6M16 6l6 6-6 6M14 4l-4 16"/></svg>
+            Containers &amp; CI/CD
+          </h3>
+          <ul>
+            <li>Docker</li><li>Kubernetes</li><li>Helm</li><li>Jenkins</li>
+            <li>GitHub Actions</li><li>Argo CD</li><li>AWS CodePipeline</li><li>Kustomize</li>
+          </ul>
+        </div>
+
+        <div class="skill-group">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+            Security
+          </h3>
+          <ul>
+            <li>Nmap</li><li>Wireshark</li><li>Nessus</li><li>Splunk</li>
+            <li>Linux hardening</li><li>Network defense</li><li>Trivy</li><li>CodeQL</li>
+          </ul>
+        </div>
+
+        <div class="skill-group">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 8-4 4 4 4M14 8l4 4-4 4"/></svg>
+            Languages
+          </h3>
+          <ul>
+            <li>Python</li><li>Bash</li><li>C</li><li>YAML</li><li>HCL</li>
+            <li>JavaScript</li><li>React</li><li>SQL</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Certifications. .earned gets a tick, .pending gets a dashed border. -->
+      <ul class="certs" style="margin-top:1.5rem">
+        <li class="earned"><strong>CompTIA Security+</strong></li>
+        <li class="earned"><strong>CompTIA Network+</strong></li>
+        <li class="pending">AWS Solutions Architect – Associate <span class="yr">in progress</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ======================= HOMELAB ======================= -->
+  <section class="section" id="homelab">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="num">03</span>Homelab</h2>
+      </div>
+      <p class="lede" style="margin-bottom:1.75rem">
+        Where everything gets broken first. A self-hosted Kubernetes cluster and
+        security tooling for testing deployments, detection, and automation before
+        they touch anything real.
+      </p>
+
+      <div class="homelab">
+        <!-- Replace this whole div with an image once you have a diagram:
+             <div class="homelab__diagram" style="background:none;padding:0">
+               <img src="assets/img/homelab.png" alt="Homelab network diagram: three
+                    Kubernetes nodes behind an Nginx reverse proxy, with Splunk
+                    ingesting logs from a separate lab VLAN">
+             </div>
+             Draw one in draw.io or Excalidraw — a diagram does more for this section
+             than another paragraph would. -->
+        <div class="homelab__diagram">
+          [ drop your homelab network / architecture diagram here ]
+        </div>
+
+        <dl class="homelab__specs">
+          <div class="homelab__spec">
+            <dt>compute</dt>
+            <dd>3-node Kubernetes cluster, built the hard way with kubeadm — certificates,
+                CNI, and node hardening done manually.</dd>
+          </div>
+          <div class="homelab__spec">
+            <dt>pipeline</dt>
+            <dd>Self-hosted Jenkins behind Nginx with SSL, GitOps delivery via Argo CD.</dd>
+          </div>
+          <div class="homelab__spec">
+            <dt>security</dt>
+            <dd>Splunk log ingest, Nessus vulnerability scans, packet capture with Wireshark.</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= WRITING ======================= -->
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="section-head">
+        <h2><span class="num">04</span>Writing</h2>
+        <a href="writeups.html">All posts &rarr;</a>
+      </div>
+
+      <ul class="post-list">
+        <li>
+          <a class="post-link" href="https://yonghoabdurahim.medium.com/kubernetes-cluster-autoscaler-deployed-on-eks-cluster-4b3a1c2791e5" rel="noopener">
+            <time datetime="2023-07-01">Jul 2023</time>
+            <div>
+              <div class="title-row">
+                <h3>Kubernetes Cluster Autoscaler deployed on an EKS cluster</h3>
+                <span class="src">Medium · AWS Tip</span>
+              </div>
+              <p>Provisioning the cluster with Terraform, deploying the autoscaler with
+                 Helm, and load-testing until nodes actually scale.</p>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="post-link" href="writeups/oidc-github-actions-aws.html">
+            <time datetime="2026-06-14">Jun 2026</time>
+            <div>
+              <div class="title-row">
+                <h3>Deleting our AWS access keys: GitHub Actions to AWS with OIDC</h3>
+                <span class="src src--here">Here</span>
+              </div>
+              <p>The trust policy, the role scoping, and the two mistakes that cost me
+                 an afternoon.</p>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="post-link" href="https://yonghoabdurahim.medium.com/humangov-deployment-of-a-reusable-saas-multi-tenant-aws-infrastructure-using-terraform-modules-722de6698760" rel="noopener">
+            <time datetime="2023-06-01">Jun 2023</time>
+            <div>
+              <div class="title-row">
+                <h3>HumanGov: reusable multi-tenant AWS infrastructure with Terraform modules</h3>
+                <span class="src">Medium</span>
+              </div>
+              <p>One module set, an isolated stack per tenant — onboarding a new state
+                 becomes a variable change.</p>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ======================= CTA ======================= -->
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="cta">
+        <p class="eyebrow" style="text-transform:none;letter-spacing:0">$ ping abdurahim</p>
+        <h2>Let's build something secure.</h2>
+        <p>Open to DevSecOps and cloud security roles, collaborations, and freelance
+           infrastructure work.</p>
+        <div class="btn-row">
+          <a class="btn btn--primary" href="https://www.linkedin.com/in/abdurahim-yongho/" rel="noopener">Message me on LinkedIn</a>
+          <a class="btn btn--ghost" href="mailto:yonghoabdurahim@gmail.com">Email</a>
+          <a class="btn btn--ghost" href="https://github.com/abdurahim50" rel="noopener">GitHub</a>
+          <a class="btn btn--ghost" href="https://yonghoabdurahim.medium.com/" rel="noopener">Medium</a>
+          <a class="btn btn--ghost" href="https://dev.to/abdurahim50" rel="noopener">dev.to</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ======================= FOOTER ======================= -->
+<footer class="site-footer">
+  <div class="wrap">
+    <p style="margin:0">&copy; <span data-year>2026</span> Abdurahim Yongho — built for GitHub Pages</p>
+    <nav aria-label="Footer">
+      <a href="projects.html">Projects</a>
+      <a href="writeups.html">Writing</a>
+      <a href="about.html">About</a>
+      <a href="https://github.com/abdurahim50" rel="noopener">GitHub</a>
+      <span style="font-family:var(--font-mono)">exit 0</span>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/js/projects.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

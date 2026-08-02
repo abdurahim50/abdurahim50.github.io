@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects — Abdurahim Yongho</title>
+<meta name="description" content="Cloud, DevOps, security, and homelab projects: EKS autoscaling, multi-tenant AWS with Terraform, GitOps with Argo CD, and a kubeadm-built cluster.">
+<link rel="canonical" href="https://abdurahim50.github.io/portfolio/projects.html">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="nav__brand" href="index.html"><span class="user">abdurahim@sec</span><span class="path">:~$</span></a>
+    <ul class="nav__links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="projects.html" aria-current="page">Projects</a></li>
+      <li><a href="index.html#homelab">Homelab</a></li>
+      <li><a href="writeups.html">Writing</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="about.html#contact">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="icon-btn" data-theme-toggle type="button" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+      <button class="icon-btn nav__toggle" data-nav-toggle type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Portfolio</p>
+      <h1>Projects</h1>
+      <p class="lede">
+        Everything here is built and running, or honestly marked as in progress. Each
+        card links to the source so you can check the work rather than take my word
+        for it. Anything tagged <em>starter — replace me</em> is a placeholder I
+        haven't finished writing up yet.
+      </p>
+
+      <!-- Filters. If you add a new category to projects.js, add a button here too. -->
+      <div class="filters" role="group" aria-label="Filter projects by category" style="margin-top:2rem">
+        <button class="filter" type="button" data-filter="all" aria-pressed="true">All</button>
+        <button class="filter" type="button" data-filter="cloud" aria-pressed="false">Cloud</button>
+        <button class="filter" type="button" data-filter="devops" aria-pressed="false">DevOps</button>
+        <button class="filter" type="button" data-filter="security" aria-pressed="false">Security</button>
+        <button class="filter" type="button" data-filter="homelab" aria-pressed="false">Homelab</button>
+        <span class="filter" id="project-count" style="border-color:transparent;background:none;cursor:default" aria-live="polite"></span>
+      </div>
+
+      <div class="grid grid--2" id="project-grid"></div>
+      <p class="empty-state" id="project-empty" hidden>No projects in this category yet.</p>
+
+      <noscript>
+        <p class="lede">This page renders projects with JavaScript. Browse
+        <a href="https://github.com/abdurahim50?tab=repositories">my GitHub repositories</a> instead.</p>
+      </noscript>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="cta">
+        <h2>Want the detail?</h2>
+        <p>Most of these have a full writeup covering the design decisions and the
+           things that went wrong the first time.</p>
+        <div class="btn-row">
+          <a class="btn btn--primary" href="writeups.html">Read the writeups</a>
+          <a class="btn btn--ghost" href="index.html#homelab">See the homelab</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p style="margin:0">&copy; <span data-year>2026</span> Abdurahim Yongho — built for GitHub Pages</p>
+    <nav aria-label="Footer">
+      <a href="projects.html">Projects</a>
+      <a href="writeups.html">Writing</a>
+      <a href="about.html">About</a>
+      <a href="https://github.com/abdurahim50" rel="noopener">GitHub</a>
+      <span style="font-family:var(--font-mono)">exit 0</span>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/js/projects.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

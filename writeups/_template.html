@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  WRITEUP TEMPLATE
+  ============================================================================
+  To start a new post:
+    1. Copy this file to writeups/your-slug.html  (lowercase, hyphens, no spaces)
+    2. Replace everything marked EDIT below
+    3. Add a matching <li> at the top of the list in writeups.html
+
+  Useful blocks you can copy from the body:
+    <div class="callout">   — highlighted aside
+    <blockquote>            — pull quote
+    <pre><code>             — code block
+    <table>                 — comparison table
+  ============================================================================
+-->
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- EDIT: title and description -->
+<title>Post title — Abdurahim</title>
+<meta name="description" content="One sentence describing the post. This is what shows up in search results.">
+<link rel="canonical" href="https://abdurahim50.github.io/portfolio/writeups/your-slug.html">
+
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="nav__brand" href="../index.html"><span class="user">abdurahim@sec</span><span class="path">:~$</span></a>
+    <ul class="nav__links" id="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../projects.html">Projects</a></li>
+      <li><a href="../index.html#homelab">Homelab</a></li>
+      <li><a href="../writeups.html" aria-current="page">Writing</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../about.html#contact">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="icon-btn" data-theme-toggle type="button" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+      <button class="icon-btn nav__toggle" data-nav-toggle type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+<section class="section">
+<div class="wrap">
+<article class="article">
+
+  <a class="back-link" href="../writeups.html">&larr; All writing</a>
+
+  <header>
+    <div class="article__meta">
+      <!-- EDIT: datetime is machine-readable (YYYY-MM-DD), the text is what readers see -->
+      <time datetime="2026-01-01">1 January 2026</time>
+      <span>·</span>
+      <span>8 min read</span>
+      <span>·</span>
+      <span>Category</span>
+    </div>
+
+    <!-- EDIT: headline -->
+    <h1>Post title goes here</h1>
+
+    <!-- EDIT: the hook. Two or three sentences on what the reader gets. -->
+    <p class="lede">
+      Open with the problem and the outcome, not with background. If a reader stops
+      after this paragraph they should still know what you did and whether it worked.
+    </p>
+  </header>
+
+  <!-- Optional — delete if the post is short -->
+  <nav class="toc" aria-label="Contents">
+    <p>Contents</p>
+    <ol>
+      <li><a href="#problem">The problem</a></li>
+      <li><a href="#approach">The approach</a></li>
+      <li><a href="#broke">What broke</a></li>
+      <li><a href="#next">What I'd do differently</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="problem">The problem</h2>
+  <p>
+    What you were trying to do and why the obvious approach didn't work. Be concrete —
+    name the tool, the version, the constraint.
+  </p>
+
+  <h2 id="approach">The approach</h2>
+  <p>Explain the design decision before showing the code.</p>
+
+<pre><code># Code block. HTML-escape angle brackets:
+#   &lt; becomes &amp;lt;   &gt; becomes &amp;gt;
+echo "hello"</code></pre>
+
+  <div class="callout">
+    <strong>Callout:</strong> use these for the thing you wish someone had told you
+    before you started.
+  </div>
+
+  <h2 id="broke">What broke</h2>
+  <p>
+    This is the section that makes a writeup worth reading. Failures are far more
+    convincing evidence of real experience than a clean happy path.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Option</th><th>Pro</th><th>Con</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Option A</td><td>Simple</td><td>Doesn't scale</td></tr>
+      <tr><td>Option B</td><td>Scales</td><td>More moving parts</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="next">What I'd do differently</h2>
+  <blockquote>
+    A short, honest conclusion. What you'd change, and what you still don't know.
+  </blockquote>
+
+  <hr>
+
+  <p style="color:var(--text-muted);font-size:.92rem">
+    Corrections welcome — <a href="mailto:yonghoabdurahim@gmail.com">email me</a>.
+  </p>
+
+</article>
+</div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p style="margin:0">&copy; <span data-year>2026</span> Abdurahim Yongho — built for GitHub Pages</p>
+    <nav aria-label="Footer">
+      <a href="../projects.html">Projects</a>
+      <a href="../writeups.html">Writing</a>
+      <a href="../about.html">About</a>
+      <a href="https://github.com/abdurahim50" rel="noopener">GitHub</a>
+      <span style="font-family:var(--font-mono)">exit 0</span>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

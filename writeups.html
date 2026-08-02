@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing — Abdurahim Yongho</title>
+<meta name="description" content="Technical writing on Kubernetes, AWS, Terraform, CI/CD and cloud security — published here and on Medium.">
+<link rel="canonical" href="https://abdurahim50.github.io/portfolio/writeups.html">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="nav__brand" href="index.html"><span class="user">abdurahim@sec</span><span class="path">:~$</span></a>
+    <ul class="nav__links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="index.html#homelab">Homelab</a></li>
+      <li><a href="writeups.html" aria-current="page">Writing</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="about.html#contact">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="icon-btn" data-theme-toggle type="button" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+      <button class="icon-btn nav__toggle" data-nav-toggle type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Notes from the lab</p>
+      <h1>Writing</h1>
+      <p class="lede">
+        Longer-form notes on things I've built or broken. Older posts live on Medium;
+        newer ones are hosted here so they don't disappear behind a paywall.
+        <span class="src src--here" style="margin-left:0">Here</span> means it's on this
+        site, <span class="src">Medium</span> means it's external.
+      </p>
+
+      <p style="margin-top:1.25rem">
+        <a href="https://yonghoabdurahim.medium.com/" rel="noopener">All posts on Medium &rarr;</a>
+        &nbsp;·&nbsp;
+        <a href="https://dev.to/abdurahim50" rel="noopener">dev.to &rarr;</a>
+      </p>
+
+      <!-- ===== HOW TO ADD A POST =====
+           Hosted here:
+             1. Copy writeups/_template.html to writeups/your-slug.html
+             2. Fill in title, date, body
+             3. Add an <li> below with <span class="src src--here">Here</span>
+             4. Add a <url> entry to sitemap.xml
+           On Medium/dev.to:
+             Just add an <li> below with rel="noopener" and <span class="src">Medium</span>
+           Keep the list newest-first.
+           ============================== -->
+      <ul class="post-list" style="margin-top:2.5rem">
+
+        <li>
+          <a class="post-link" href="writeups/oidc-github-actions-aws.html">
+            <time datetime="2026-06-14">14 Jun 2026</time>
+            <div>
+              <div class="title-row">
+                <h3>Deleting our AWS access keys: GitHub Actions to AWS with OIDC</h3>
+                <span class="src src--here">Here</span>
+              </div>
+              <p>Long-lived IAM keys in CI are the single easiest credential to leak.
+                 Here's the trust policy, the role scoping, and the two mistakes that
+                 cost me an afternoon.</p>
+              <ul class="tags">
+                <li class="tag">AWS</li><li class="tag">OIDC</li>
+                <li class="tag">IAM</li><li class="tag">GitHub Actions</li>
+              </ul>
+            </div>
+          </a>
+        </li>
+
+        <li>
+          <a class="post-link" href="writeups/signing-images-with-cosign.html">
+            <time datetime="2026-05-02">2 May 2026</time>
+            <div>
+              <div class="title-row">
+                <h3>Keyless image signing with Cosign, and actually enforcing it</h3>
+                <span class="src src--here">Here</span>
+              </div>
+              <p>Signing images is the easy half. The value only arrives when the
+                 cluster refuses to run anything unsigned — which is where most
+                 tutorials stop.</p>
+              <ul class="tags">
+                <li class="tag">Cosign</li><li class="tag">Sigstore</li>
+                <li class="tag">SBOM</li><li class="tag">Kubernetes</li>
+              </ul>
+            </div>
+          </a>
+        </li>
+
+        <li>
+          <a class="post-link" href="https://yonghoabdurahim.medium.com/kubernetes-cluster-autoscaler-deployed-on-eks-cluster-4b3a1c2791e5" rel="noopener">
+            <time datetime="2023-07-01">Jul 2023</time>
+            <div>
+              <div class="title-row">
+                <h3>Kubernetes Cluster Autoscaler deployed on an EKS cluster</h3>
+                <span class="src">Medium · AWS Tip</span>
+              </div>
+              <p>Terraform-provisioned EKS, autoscaler deployed with Helm, then
+                 load-tested until nodes genuinely scale in and out.</p>
+              <ul class="tags">
+                <li class="tag">EKS</li><li class="tag">Terraform</li>
+                <li class="tag">Helm</li><li class="tag">Autoscaling</li>
+              </ul>
+            </div>
+          </a>
+        </li>
+
+        <li>
+          <a class="post-link" href="https://yonghoabdurahim.medium.com/provision-aks-cluster-using-terraform-and-push-the-image-to-acr-using-jenkins-and-use-argocd-cli-36cf3844a979" rel="noopener">
+            <time datetime="2023-07-01">Jul 2023</time>
+            <div>
+              <div class="title-row">
+                <h3>Provisioning AKS with Terraform, pushing to ACR via Jenkins, deploying with Argo CD</h3>
+                <span class="src">Medium</span>
+              </div>
+              <p>The same GitOps pattern on Azure — proof that the delivery model
+                 transfers even when the pipeline doesn't.</p>
+              <ul class="tags">
+                <li class="tag">AKS</li><li class="tag">ACR</li>
+                <li class="tag">Jenkins</li><li class="tag">Argo CD</li>
+              </ul>
+            </div>
+          </a>
+        </li>
+
+        <li>
+          <a class="post-link" href="https://yonghoabdurahim.medium.com/deploy-a-sample-application-onto-eks-cluster-utilizing-aws-ci-cd-code-pipeline-codecommit-aws-81b1b2ea5cde" rel="noopener">
+            <time datetime="2023-06-01">Jun 2023</time>
+            <div>
+              <div class="title-row">
+                <h3>Deploying to EKS with AWS CodePipeline and CodeCommit</h3>
+                <span class="src">Medium · AWS Tip</span>
+              </div>
+              <p>A native AWS CI/CD path onto EKS, with the build and deploy stages
+                 wired together end to end.</p>
+              <ul class="tags">
+                <li class="tag">CodePipeline</li><li class="tag">EKS</li>
+                <li class="tag">Docker</li><li class="tag">CI/CD</li>
+              </ul>
+            </div>
+          </a>
+        </li>
+
+        <li>
+          <a class="post-link" href="https://yonghoabdurahim.medium.com/deploy-a-containerized-django-web-based-real-estate-app-to-digital-ocean-kubernetes-cluster-1bf4201c34a2" rel="noopener">
+            <time datetime="2023-06-01">Jun 2023</time>
+            <div>
+              <div class="title-row">
+                <h3>Deploying a containerized Django app to DigitalOcean Kubernetes</h3>
+                <span class="src">Medium</span>
+              </div>
+              <p>Containerising a real-estate web app and shipping it to a managed
+                 DOKS cluster with Helm and GitHub Actions.</p>
+              <ul class="tags">
+                <li class="tag">DOKS</li><li class="tag">Django</li>
+                <li class="tag">Helm</li><li class="tag">GitHub Actions</li>
+              </ul>
+            </div>
+          </a>
+        </li>
+
+        <li>
+          <a class="post-link" href="https://yonghoabdurahim.medium.com/humangov-deployment-of-a-reusable-saas-multi-tenant-aws-infrastructure-using-terraform-modules-722de6698760" rel="noopener">
+            <time datetime="2023-06-01">Jun 2023</time>
+            <div>
+              <div class="title-row">
+                <h3>HumanGov: reusable SaaS multi-tenant AWS infra with Terraform modules</h3>
+                <span class="src">Medium</span>
+              </div>
+              <p>One module set, an isolated stack per tenant — onboarding a new state
+                 becomes a variable change rather than a new codebase.</p>
+              <ul class="tags">
+                <li class="tag">Terraform</li><li class="tag">AWS</li>
+                <li class="tag">Multi-tenancy</li><li class="tag">DynamoDB</li>
+              </ul>
+            </div>
+          </a>
+        </li>
+
+        <li>
+          <a class="post-link" href="https://yonghoabdurahim.medium.com/install-and-configure-jenkins-with-ssl-in-digitalocean-set-up-tools-and-use-nginx-as-reverse-proxy-8ae7077b6f52" rel="noopener">
+            <time datetime="2023-06-01">Jun 2023</time>
+            <div>
+              <div class="title-row">
+                <h3>Jenkins with SSL on DigitalOcean, behind an Nginx reverse proxy</h3>
+                <span class="src">Medium · AWS Tip</span>
+              </div>
+              <p>Standing up a self-hosted Jenkins properly — TLS termination, reverse
+                 proxy config, and the tooling setup that follows.</p>
+              <ul class="tags">
+                <li class="tag">Jenkins</li><li class="tag">Nginx</li>
+                <li class="tag">SSL</li><li class="tag">DigitalOcean</li>
+              </ul>
+            </div>
+          </a>
+        </li>
+
+      </ul>
+
+      <p style="margin-top:2rem;color:var(--text-muted);font-size:.9rem">
+        Starting a new post? Copy <code>writeups/_template.html</code>.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p style="margin:0">&copy; <span data-year>2026</span> Abdurahim Yongho — built for GitHub Pages</p>
+    <nav aria-label="Footer">
+      <a href="projects.html">Projects</a>
+      <a href="writeups.html">Writing</a>
+      <a href="about.html">About</a>
+      <a href="https://github.com/abdurahim50" rel="noopener">GitHub</a>
+      <span style="font-family:var(--font-mono)">exit 0</span>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

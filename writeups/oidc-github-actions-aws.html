@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Actions to AWS with OIDC — Abdurahim</title>
+<meta name="description" content="Replacing long-lived IAM access keys in CI with GitHub Actions OIDC federation: the trust policy, role scoping, and the mistakes that cost me an afternoon.">
+<link rel="canonical" href="https://abdurahim50.github.io/portfolio/writeups/oidc-github-actions-aws.html">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- Nav: note the ../ prefixes because this page lives in writeups/ -->
+<header class="site-header">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="nav__brand" href="../index.html"><span class="user">abdurahim@sec</span><span class="path">:~$</span></a>
+    <ul class="nav__links" id="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../projects.html">Projects</a></li>
+      <li><a href="../index.html#homelab">Homelab</a></li>
+      <li><a href="../writeups.html" aria-current="page">Writing</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../about.html#contact">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="icon-btn" data-theme-toggle type="button" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+      <button class="icon-btn nav__toggle" data-nav-toggle type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+<section class="section">
+<div class="wrap">
+<article class="article">
+
+  <a class="back-link" href="../writeups.html">&larr; All writing</a>
+
+  <header>
+    <div class="article__meta">
+      <time datetime="2026-06-14">14 June 2026</time>
+      <span>·</span>
+      <span>9 min read</span>
+      <span>·</span>
+      <span>AWS · CI/CD</span>
+    </div>
+    <h1>Deleting our AWS access keys: GitHub Actions to AWS with OIDC</h1>
+    <p class="lede">
+      Static IAM keys in CI are the easiest credential in your organisation to leak
+      and the hardest to notice leaking. OIDC federation removes them entirely. Here
+      is the setup I use, and the two things that wasted my afternoon.
+    </p>
+  </header>
+
+  <nav class="toc" aria-label="Contents">
+    <p>Contents</p>
+    <ol>
+      <li><a href="#problem">The problem with keys in CI</a></li>
+      <li><a href="#how">How OIDC federation works</a></li>
+      <li><a href="#provider">Step 1 — register the identity provider</a></li>
+      <li><a href="#role">Step 2 — the role and its trust policy</a></li>
+      <li><a href="#workflow">Step 3 — the workflow</a></li>
+      <li><a href="#mistakes">Two mistakes I made</a></li>
+      <li><a href="#verify">Verifying it actually worked</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="problem">The problem with keys in CI</h2>
+
+  <p>
+    A repository secret holding <code>AWS_ACCESS_KEY_ID</code> and
+    <code>AWS_SECRET_ACCESS_KEY</code> has three properties that should worry you: it
+    never expires, it is valid from anywhere on the internet, and any workflow in the
+    repository can read it — including one added by a pull request if your settings are
+    careless. Rotating it is a manual chore, so in practice nobody does.
+  </p>
+
+  <p>
+    Federation replaces that with a token GitHub mints for a specific workflow run,
+    valid for minutes, exchangeable only for a role you explicitly allowed. Nothing
+    long-lived is stored anywhere.
+  </p>
+
+  <div class="callout">
+    <strong>The short version:</strong> GitHub signs a JWT describing the run
+    (repository, branch, environment). AWS is configured to trust GitHub's OIDC issuer
+    and to hand out a role only when the claims in that JWT match a condition you wrote.
+  </div>
+
+  <h2 id="how">How OIDC federation works</h2>
+
+  <p>
+    Three things have to line up. AWS needs to trust the issuer
+    (<code>token.actions.githubusercontent.com</code>). A role needs a trust policy that
+    accepts tokens from that issuer <em>and</em> constrains which repository and ref may
+    assume it. The workflow needs <code>id-token: write</code> permission so it can
+    request the token in the first place.
+  </p>
+
+  <p>
+    Miss any one of the three and you get an <code>AssumeRoleWithWebIdentity</code>
+    failure that does not tell you which one.
+  </p>
+
+  <h2 id="provider">Step 1 — register the identity provider</h2>
+
+  <p>One per AWS account. In Terraform:</p>
+
+<pre><code>resource "aws_iam_openid_connect_provider" "github" {
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
+}</code></pre>
+
+  <div class="callout">
+    <strong>Note:</strong> AWS now validates GitHub's certificate chain against its own
+    trust store, so the thumbprint is effectively vestigial — but the argument is still
+    required by the provider. Do not build alerting around it changing.
+  </div>
+
+  <h2 id="role">Step 2 — the role and its trust policy</h2>
+
+  <p>
+    This is where the security actually lives. The condition block is what stops any
+    other GitHub repository on the internet from assuming your role.
+  </p>
+
+<pre><code>data "aws_iam_policy_document" "trust" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.github.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    # Scope to one repo AND one ref. Do not use a bare wildcard here.
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = ["repo:abdurahim50/zen-infra:ref:refs/heads/main"]
+    }
+  }
+}</code></pre>
+
+  <p>
+    For workflows gated behind a GitHub Environment, the <code>sub</code> claim changes
+    shape — it becomes <code>repo:OWNER/REPO:environment:NAME</code>. That is worth
+    preferring, because environments give you required reviewers on top of the branch
+    constraint.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Trigger</th><th><code>sub</code> claim</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Push to main</td><td><code>repo:OWNER/REPO:ref:refs/heads/main</code></td></tr>
+      <tr><td>Tag</td><td><code>repo:OWNER/REPO:ref:refs/tags/v1.2.3</code></td></tr>
+      <tr><td>Environment</td><td><code>repo:OWNER/REPO:environment:production</code></td></tr>
+      <tr><td>Pull request</td><td><code>repo:OWNER/REPO:pull_request</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="workflow">Step 3 — the workflow</h2>
+
+<pre><code>permissions:
+  id-token: write   # required to request the OIDC token
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::&lt;ACCOUNT-ID&gt;:role/gha-zen-infra
+          aws-region: us-east-1
+          role-session-name: gha-${{ github.run_id }}
+
+      - run: aws sts get-caller-identity</code></pre>
+
+  <p>
+    Setting <code>role-session-name</code> to something containing the run ID is worth
+    the extra line: CloudTrail then tells you exactly which workflow run made each API
+    call.
+  </p>
+
+  <h2 id="mistakes">Two mistakes I made</h2>
+
+  <h3>1. Forgetting <code>permissions:</code> at job level</h3>
+  <p>
+    I set <code>id-token: write</code> at the top of the workflow, then added a
+    <code>permissions:</code> block to one job for something unrelated. Job-level
+    permissions replace the workflow-level block entirely rather than merging with it,
+    so that job silently lost the ability to request a token. The error surfaced as a
+    generic credentials failure several steps later.
+  </p>
+
+  <h3>2. Wildcarding the <code>sub</code> claim "temporarily"</h3>
+  <p>
+    While debugging I relaxed the condition to
+    <code>repo:abdurahim50/zen-infra:*</code>. That works — and it also means a pull
+    request from a fork can assume a role with Terraform apply permissions. I caught it
+    on review the next day. If you need a wildcard while debugging, use
+    <code>StringLike</code> with an explicit prefix and put a reminder in the PR
+    description to remove it.
+  </p>
+
+  <blockquote>
+    A trust policy is the actual security boundary here. The IAM permissions attached to
+    the role only matter once someone has already been allowed to assume it.
+  </blockquote>
+
+  <h2 id="verify">Verifying it actually worked</h2>
+
+  <ol>
+    <li>Run the workflow and confirm <code>aws sts get-caller-identity</code> returns an
+        ARN of the form <code>assumed-role/gha-zen-infra/gha-&lt;run-id&gt;</code>.</li>
+    <li>Delete the old <code>AWS_ACCESS_KEY_ID</code> and
+        <code>AWS_SECRET_ACCESS_KEY</code> repository secrets. If the pipeline still
+        passes, nothing was quietly depending on them.</li>
+    <li>Deactivate — then delete — the underlying IAM user's access keys. Deactivating
+        first gives you a reversible step and a clean CloudTrail signal if something
+        still needs them.</li>
+    <li>Open a branch that is not <code>main</code> and confirm the assume-role call
+        fails. A control you have not seen fail is a control you have not tested.</li>
+  </ol>
+
+  <div class="callout">
+    <strong>Where this went next:</strong> the same pattern covers pushing to ECR and
+    updating the GitOps repository, which meant the entire delivery path for
+    <a href="../projects.html?filter=cloud">Zen Pharma</a> ended up with zero
+    long-lived cloud credentials in it.
+  </div>
+
+  <hr>
+
+  <p style="color:var(--text-muted);font-size:.92rem">
+    Corrections welcome — <a href="mailto:yonghoabdurahim@gmail.com">email me</a>.
+  </p>
+
+</article>
+</div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p style="margin:0">&copy; <span data-year>2026</span> Abdurahim Yongho — built for GitHub Pages</p>
+    <nav aria-label="Footer">
+      <a href="../projects.html">Projects</a>
+      <a href="../writeups.html">Writing</a>
+      <a href="../about.html">About</a>
+      <a href="https://github.com/abdurahim50" rel="noopener">GitHub</a>
+      <span style="font-family:var(--font-mono)">exit 0</span>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

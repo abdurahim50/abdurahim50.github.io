@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keyless image signing with Cosign — Abdurahim</title>
+<meta name="description" content="Signing container images with keyless Cosign, attesting SBOMs, and enforcing verification at Kubernetes admission so unsigned images cannot run.">
+<link rel="canonical" href="https://abdurahim50.github.io/portfolio/writeups/signing-images-with-cosign.html">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="nav__brand" href="../index.html"><span class="user">abdurahim@sec</span><span class="path">:~$</span></a>
+    <ul class="nav__links" id="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../projects.html">Projects</a></li>
+      <li><a href="../index.html#homelab">Homelab</a></li>
+      <li><a href="../writeups.html" aria-current="page">Writing</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../about.html#contact">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="icon-btn" data-theme-toggle type="button" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+      <button class="icon-btn nav__toggle" data-nav-toggle type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+<section class="section">
+<div class="wrap">
+<article class="article">
+
+  <a class="back-link" href="../writeups.html">&larr; All writing</a>
+
+  <header>
+    <div class="article__meta">
+      <time datetime="2026-05-02">2 May 2026</time>
+      <span>·</span>
+      <span>11 min read</span>
+      <span>·</span>
+      <span>Supply chain · Kubernetes</span>
+    </div>
+    <h1>Keyless image signing with Cosign, and actually enforcing it</h1>
+    <p class="lede">
+      Adding a signing step to CI takes about ten minutes and changes nothing about your
+      security posture. The value only arrives when something refuses to run an unsigned
+      image — which is the part most guides skip.
+    </p>
+  </header>
+
+  <nav class="toc" aria-label="Contents">
+    <p>Contents</p>
+    <ol>
+      <li><a href="#threat">What signing actually defends against</a></li>
+      <li><a href="#keyless">Why keyless</a></li>
+      <li><a href="#signing">Signing in the pipeline</a></li>
+      <li><a href="#sbom">Attesting an SBOM</a></li>
+      <li><a href="#enforce">Enforcing it at admission</a></li>
+      <li><a href="#gaps">What this still doesn't cover</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="threat">What signing actually defends against</h2>
+
+  <p>
+    Be precise about the threat, or you will build the wrong control. Image signing
+    answers one question: <em>was this exact image produced by the pipeline I expect,
+    from the repository I expect?</em> It does not tell you the image is free of
+    vulnerabilities, and it does not stop a compromised dependency — the pipeline will
+    happily sign a backdoored build.
+  </p>
+
+  <p>What it does close off:</p>
+
+  <ul>
+    <li>Someone with registry write access pushing a malicious image over a known tag.</li>
+    <li>A tag being repointed to a different digest between build and deploy.</li>
+    <li>An image from an entirely different source being deployed by mistake or by
+        a manipulated manifest.</li>
+  </ul>
+
+  <div class="callout">
+    <strong>Tags are not identity.</strong> <code>myapp:v1.2.3</code> is a mutable
+    pointer. Everything downstream of the build should reference the digest,
+    <code>myapp@sha256:…</code>, and the signature is over that digest.
+  </div>
+
+  <h2 id="keyless">Why keyless</h2>
+
+  <p>
+    Traditional signing means a private key, which means storing it, rotating it,
+    restricting who can use it, and revoking it when someone leaves. In CI that key
+    typically ends up in a secret — reintroducing exactly the long-lived credential
+    problem you were trying to solve.
+  </p>
+
+  <p>
+    Keyless signing uses the workflow's OIDC identity to obtain a short-lived
+    certificate from Fulcio, signs with it, and records the signature in Rekor, a public
+    transparency log. The certificate expires in minutes. There is no key to steal,
+    and the signature carries the identity of the workflow that produced it — which is
+    strictly more information than "someone who had the key".
+  </p>
+
+  <h2 id="signing">Signing in the pipeline</h2>
+
+<pre><code>permissions:
+  id-token: write      # for the Fulcio certificate
+  packages: write
+  contents: read
+
+steps:
+  - name: Build and push by digest
+    id: build
+    uses: docker/build-push-action@v6
+    with:
+      push: true
+      tags: ghcr.io/abdurahim50/gateway:${{ github.sha }}
+
+  - name: Sign the image
+    env:
+      DIGEST: ${{ steps.build.outputs.digest }}
+    run: |
+      cosign sign --yes \
+        ghcr.io/abdurahim50/gateway@${DIGEST}</code></pre>
+
+  <p>
+    Note that the signature is applied to <code>@${DIGEST}</code>, not to the tag. This
+    matters: sign the tag and you have signed a pointer that can be moved afterwards.
+  </p>
+
+  <div class="callout">
+    <strong>Pin your actions too.</strong> Signing images while calling
+    <code>some-action@v3</code> is inconsistent — a moving tag on a third-party action
+    is a write path into your build. Pin by commit SHA and let Dependabot raise the
+    bumps as reviewable pull requests.
+  </div>
+
+  <h2 id="sbom">Attesting an SBOM</h2>
+
+  <p>
+    A signature proves origin. An attestation attaches a signed statement <em>about</em>
+    the image — most usefully a software bill of materials, so that when the next
+    ecosystem-wide CVE lands you can answer "are we affected?" from your registry rather
+    than by rebuilding everything.
+  </p>
+
+<pre><code>syft ghcr.io/abdurahim50/gateway@${DIGEST} \
+  -o spdx-json > sbom.spdx.json
+
+cosign attest --yes \
+  --predicate sbom.spdx.json \
+  --type spdxjson \
+  ghcr.io/abdurahim50/gateway@${DIGEST}</code></pre>
+
+  <h2 id="enforce">Enforcing it at admission</h2>
+
+  <p>
+    This is the step that turns the previous work into a control. Using the Sigstore
+    policy controller, a <code>ClusterImagePolicy</code> tells the cluster which
+    identities it will accept signatures from:
+  </p>
+
+<pre><code>apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: require-signed-images
+spec:
+  images:
+    - glob: "ghcr.io/abdurahim50/**"
+  authorities:
+    - keyless:
+        url: https://fulcio.sigstore.dev
+        identities:
+          # Both must match: who signed, and which workflow
+          - issuer: https://token.actions.githubusercontent.com
+            subject: https://github.com/abdurahim50/polyglot-microservices/.github/workflows/ci.yml@refs/heads/main</code></pre>
+
+  <p>
+    The <code>subject</code> constraint is the important line. Without it you are
+    accepting any image signed by any GitHub Actions workflow anywhere — which is close
+    to accepting everything.
+  </p>
+
+  <h3>Roll it out in warn mode first</h3>
+  <p>
+    Set the policy to warn rather than enforce, watch admission logs for a week, and fix
+    the things you forgot were running — sidecars, init containers, third-party charts,
+    the debug pod someone deploys by hand. Going straight to enforce on a live cluster
+    is how you find out your ingress controller image is not covered, at the worst
+    possible moment.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Stage</th><th>Mode</th><th>What you learn</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Week 1</td><td>Warn</td><td>Which workloads would have been blocked</td></tr>
+      <tr><td>Week 2</td><td>Enforce in one namespace</td><td>Whether your exception path works</td></tr>
+      <tr><td>Week 3</td><td>Enforce cluster-wide</td><td>Whether you missed a system namespace</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="gaps">What this still doesn't cover</h2>
+
+  <ul>
+    <li><strong>A compromised build.</strong> If an attacker gets code into main, the
+        pipeline signs their artifact with full legitimacy. Branch protection and code
+        review remain the control here, not signatures.</li>
+    <li><strong>Base image content.</strong> Signing says nothing about what is inside.
+        Scanning is a separate gate and both are needed.</li>
+    <li><strong>Runtime behaviour.</strong> A correctly signed, clean image can still be
+        exploited at runtime. Signing is about provenance, full stop.</li>
+  </ul>
+
+  <blockquote>
+    The honest framing: signing narrows the window between "our build system produced
+    this" and "this is what is running". That window is where several of the notable
+    supply-chain incidents lived. It is a real gain, and it is a specific one.
+  </blockquote>
+
+  <div class="callout">
+    Implementation lives in
+    <a href="https://github.com/abdurahim50/polyglot-microservices" rel="noopener">polyglot-microservices</a>
+    — pipeline deep-dive in <code>docs/PIPELINE.md</code>.
+  </div>
+
+  <hr>
+
+  <p style="color:var(--text-muted);font-size:.92rem">
+    Corrections welcome — <a href="mailto:yonghoabdurahim@gmail.com">email me</a>.
+  </p>
+
+</article>
+</div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p style="margin:0">&copy; <span data-year>2026</span> Abdurahim Yongho — built for GitHub Pages</p>
+    <nav aria-label="Footer">
+      <a href="../projects.html">Projects</a>
+      <a href="../writeups.html">Writing</a>
+      <a href="../about.html">About</a>
+      <a href="https://github.com/abdurahim50" rel="noopener">GitHub</a>
+      <span style="font-family:var(--font-mono)">exit 0</span>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
