@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Served from https://abdurahim50.github.io/ (a project repo).
-     If you later move to a user site or a custom domain at the root, drop the
-     /portfolio segment from every <loc> below and from every canonical tag.
+<!-- Served from the root of https://abdurahim50.github.io (a user site).
+     Moving to a custom domain later means swapping the hostname below and in
+     every <link rel="canonical"> — the paths themselves stay the same.
      Add a <url> block for each new writeup you publish. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>

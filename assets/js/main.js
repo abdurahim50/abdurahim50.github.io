@@ -7,9 +7,19 @@
   "use strict";
 
   /* --- Theme -------------------------------------------------------------
-     Order of preference: saved choice -> OS setting -> dark.
-     The inline script in each <head> applies this before first paint so the
-     page never flashes the wrong theme; this block just wires the button. */
+     The site is dark by default. Everyone lands on dark on their first visit,
+     regardless of their OS setting; only a previous choice on this site
+     overrides it, and that's remembered in localStorage.
+
+     The inline script in each <head> applies the theme before first paint so
+     the page never flashes the wrong one; this block just wires the button.
+
+     Want to respect the visitor's OS setting instead? Replace the inline
+     script in every page <head> with:
+       var t = localStorage.getItem('theme');
+       if (!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+       document.documentElement.setAttribute('data-theme', t);
+  */
   const root = document.documentElement;
 
   function setTheme(theme) {

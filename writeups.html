@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 <script>
-(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+(function(){var d=document.documentElement;try{d.setAttribute('data-theme',localStorage.getItem('theme')==='light'?'light':'dark');}catch(e){d.setAttribute('data-theme','dark');}})();
 </script>
 </head>
 <body>

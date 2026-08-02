@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>404 — Page not found</title>
 <meta name="robots" content="noindex">
-<!-- Absolute paths, prefixed with /portfolio because this site is served from
-     https://abdurahim50.github.io/ (a project repo, not a user site).
-     If you ever move to a user site or a custom domain at the root, strip the
-     /portfolio prefix from every path in this file. -->
+<!-- Absolute paths, no prefix: this is a user site served from the root of
+     https://abdurahim50.github.io. They keep working unchanged on a custom
+     domain, which also serves from the root. Only if you moved this into a
+     project repo (served at /repo-name/) would these need a prefix. -->
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css">
 <script>
-(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+(function(){var d=document.documentElement;try{d.setAttribute('data-theme',localStorage.getItem('theme')==='light'?'light':'dark');}catch(e){d.setAttribute('data-theme','dark');}})();
 </script>
 </head>
 <body>
