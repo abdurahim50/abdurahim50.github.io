@@ -1,17 +1,18 @@
-# portfolio
+# abdurahim50.github.io
 
 Plain HTML/CSS/JS portfolio for cybersecurity, cloud, DevOps, and homelab work.
 No build step, no dependencies, no framework — edit a file, push, it's live.
 
-**Live at:** https://abdurahim50.github.io/portfolio/
+**Live at:** https://abdurahim50.github.io
 
 ---
 
 ## 1. Publish it (10 minutes)
 
 1. **Create the repo.** On GitHub, create a **public** repository named exactly
-   `portfolio`. The name is what produces the `/portfolio/` path in the URL —
-   rename the repo and the site URL changes with it (see §6 if you do).
+   `abdurahim50.github.io` — your username, then `.github.io`. That exact name
+   is what makes GitHub serve it at the root with no path. Any other name puts
+   the site under `/repo-name/` instead.
 
 2. **Push these files** to the repository root (not inside a subfolder):
 
@@ -21,7 +22,7 @@ No build step, no dependencies, no framework — edit a file, push, it's live.
    git add .
    git commit -m "Initial portfolio"
    git branch -M main
-   git remote add origin https://github.com/abdurahim50/portfolio.git
+   git remote add origin https://github.com/abdurahim50/abdurahim50.github.io.git
    git push -u origin main
    ```
 
@@ -29,13 +30,11 @@ No build step, no dependencies, no framework — edit a file, push, it's live.
    branch** → Branch: `main`, folder: `/ (root)` → Save. First build takes a
    minute or two.
 
-4. **Check it.** Visit `https://abdurahim50.github.io/portfolio/`. Hard-refresh
+4. **Check it.** Visit `https://abdurahim50.github.io`. Hard-refresh
    (Ctrl+Shift+R) if you see something stale — Pages caches aggressively.
 
-> **Trailing slash matters.** `…/portfolio/` works;
-> `…/portfolio` (no slash) gets redirected by GitHub, which is fine in a browser
-> but can look broken if you paste it somewhere that doesn't follow redirects.
-> Always share the version with the slash.
+> **You only get one user site per account.** If `abdurahim50.github.io` already
+> exists as a repo, either push into that one or rename the old one first.
 
 ### Preview locally before pushing
 
@@ -201,33 +200,44 @@ anywhere.
 
 ---
 
-## 6. If the URL ever changes
+## 6. Moving to a custom domain later
 
-The site is currently wired for `https://abdurahim50.github.io/portfolio/`. Every
-link *between* pages is relative and will survive a move untouched. Only these
-three things hardcode the path:
+The site is served from the **root**, and a custom domain is served from the root
+too — so the switch is mostly painless. Every path in the site stays exactly as
+it is; only the hostname changes.
 
-| File | What's hardcoded |
-|---|---|
-| `404.html` | Absolute paths — `/portfolio/assets/…`, `/portfolio/projects.html` |
-| every `*.html` | `<link rel="canonical">` and the `og:url` / `og:image` tags |
-| `sitemap.xml`, `robots.txt` | Full URLs |
+**Buy a domain first.** GitHub doesn't sell them. Cloudflare Registrar sells at
+cost (no markup), Porkbun and Namecheap are also fine. Budget $10–15/year for a
+`.com` or `.dev`.
 
-**Renaming the repo** (e.g. `portfolio` → `site`): find-and-replace `/portfolio/`
-with `/site/` across the folder.
+**Then:**
 
-**Moving to a user site** (`abdurahim50.github.io`, no path) **or a custom
-domain**: delete the `/portfolio` segment entirely — in `404.html` that means
-`/portfolio/assets/…` becomes `/assets/…` and `href="/portfolio/"` becomes
-`href="/"`.
+1. **Verify the domain first.** GitHub profile → Settings → Pages → "Add a
+   domain". This stops anyone else pointing their repo at your domain if your
+   site is ever disabled. Do this *before* step 2.
+2. Repo → Settings → Pages → **Custom domain** → type it → Save. This commits a
+   `CNAME` file to the repo — pull it before your next push, or you'll conflict.
+3. At your DNS provider, for an apex domain like `abdurahim.dev`, add four `A`
+   records on `@`:
 
-### A note on robots.txt
+   ```
+   185.199.108.153
+   185.199.109.153
+   185.199.110.153
+   185.199.111.153
+   ```
 
-Crawlers only read `robots.txt` from the domain root, so `/portfolio/robots.txt`
-is effectively ignored. That's harmless — nothing here needs blocking — but it
-means you should submit the sitemap directly in
-[Google Search Console](https://search.google.com/search-console) rather than
-relying on the `Sitemap:` line to be discovered.
+   Plus a `CNAME` for `www` pointing to `abdurahim50.github.io` (no repo name).
+   GitHub then redirects between apex and `www` automatically.
+4. DNS can take up to 24 hours. Once it resolves, tick **Enforce HTTPS** — the
+   option may not appear for a while, that's normal. GitHub issues the
+   certificate for free.
+5. Find-and-replace `https://abdurahim50.github.io` with your domain across the
+   folder. That covers every `<link rel="canonical">`, the `og:url` and
+   `og:image` tags, `sitemap.xml`, and `robots.txt`. Nothing else needs touching.
+
+> Don't use wildcard DNS records (`*.example.com`) — GitHub warns these expose
+> you to subdomain takeover even after verification.
 
 ---
 
