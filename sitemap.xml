@@ -25,6 +25,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://abdurahim50.github.io/writeups/the-guardrail-that-invented-a-genre.html</loc>
+    <lastmod>2026-08-03</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://abdurahim50.github.io/writeups/oidc-github-actions-aws.html</loc>
     <lastmod>2026-06-14</lastmod>
     <priority>0.6</priority>

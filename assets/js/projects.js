@@ -5,8 +5,10 @@
 
    Fields
      title     (string)   Project name.
-     category  (string)   One of: security | cloud | devops | homelab
+     category  (string)   One of: ai | security | cloud | devops | homelab
                           These drive the filter buttons on projects.html.
+                          Adding a new one? Add it to CATEGORY_LABELS below
+                          AND add a matching button in projects.html.
      summary   (string)   2-4 sentences. Lead with what it does and the
                           outcome, not a list of tools.
      tags      (string[]) Technologies. Keep to ~5 so cards stay readable.
@@ -22,6 +24,18 @@
    ========================================================================== */
 
 const PROJECTS = [
+  {
+    title: "VibeMatch AI Concierge — Agentic Music Recommender",
+    category: "ai",
+    summary:
+      "Capstone for CodePath AI-110 (Foundations of AI Engineering), extending my Module 3 recommender into a full applied AI system. A plan → act → check → explain agent: Claude turns a plain-English request into a structured taste profile against a JSON schema whose genre and mood enums are built from the live catalog, a guardrail clamps energy and nulls anything the catalog doesn't contain, and a deterministic engine does the ranking. The LLM never decides which song wins — it only handles language. Ships with an evaluation harness (8/8 checks) and a first-class fallback path, so it runs and passes tests with no API key at all.",
+    tags: ["Python", "Claude API", "Structured outputs", "Guardrails", "pytest"],
+    repo: "https://github.com/abdurahim50/applied-ai-music-recommender",
+    link: "writeups/the-guardrail-that-invented-a-genre.html",
+    linkLabel: "Read writeup",
+    status: "live",
+    featured: true
+  },
   {
     title: "Kubernetes Cluster Autoscaler on EKS",
     category: "cloud",
@@ -68,7 +82,7 @@ const PROJECTS = [
     link: "https://yonghoabdurahim.medium.com/deploy-a-sample-application-onto-eks-cluster-utilizing-aws-ci-cd-code-pipeline-codecommit-aws-81b1b2ea5cde",
     linkLabel: "Read on Medium",
     status: "live",
-    featured: true
+    featured: false
   },
   {
     title: "AKS + Jenkins + Argo CD GitOps",
@@ -176,6 +190,7 @@ const PROJECTS = [
    -------------------------------------------------------------------------- */
 
 const CATEGORY_LABELS = {
+  ai: "Applied AI",
   security: "Security",
   cloud: "Cloud",
   devops: "DevOps",

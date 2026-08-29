@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The guardrail that invented a genre — Abdurahim Yongho</title>
+<meta name="description" content="An AI-written fallback parser defaulted unknown values to the first item in a list, and confidently ranked the wrong song. How I found it, why it was worse than a crash, and the one-line fix.">
+<link rel="canonical" href="https://abdurahim50.github.io/writeups/the-guardrail-that-invented-a-genre.html">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+<script>
+(function(){var d=document.documentElement;try{d.setAttribute('data-theme',localStorage.getItem('theme')==='light'?'light':'dark');}catch(e){d.setAttribute('data-theme','dark');}})();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="nav__brand" href="../index.html"><span class="user">abdurahim@sec</span><span class="path">:~$</span></a>
+    <ul class="nav__links" id="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../projects.html">Projects</a></li>
+      <li><a href="../index.html#homelab">Homelab</a></li>
+      <li><a href="../writeups.html" aria-current="page">Writing</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../about.html#contact">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="icon-btn" data-theme-toggle type="button" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+      <button class="icon-btn nav__toggle" data-nav-toggle type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+<section class="section">
+<div class="wrap">
+<article class="article">
+
+  <a class="back-link" href="../writeups.html">&larr; All writing</a>
+
+  <header>
+    <div class="article__meta">
+      <time datetime="2026-08-03">3 August 2026</time>
+      <span>·</span>
+      <span>11 min read</span>
+      <span>·</span>
+      <span>Applied AI · Reliability</span>
+    </div>
+    <h1>The guardrail that invented a genre</h1>
+    <p class="lede">
+      I asked my recommender for "something aggressive and intense for a heavy
+      workout" and it confidently returned an ambient track at number one. Nothing
+      errored. Nothing logged. The code was AI-written, it ran clean, and it was
+      quietly wrong — which is the worst failure mode there is.
+    </p>
+  </header>
+
+  <nav class="toc" aria-label="Contents">
+    <p>Contents</p>
+    <ol>
+      <li><a href="#program">Where this came from</a></li>
+      <li><a href="#system">The system in one paragraph</a></li>
+      <li><a href="#bug">The bug</a></li>
+      <li><a href="#worse">Why this is worse than a crash</a></li>
+      <li><a href="#fix">The fix: refuse to guess</a></li>
+      <li><a href="#lock">Locking it down</a></li>
+      <li><a href="#credits">The other failure — and why it reassured me</a></li>
+      <li><a href="#takeaway">What I actually took from this</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="program">Where this came from</h2>
+
+  <p>
+    This is the capstone for CodePath's AI-110, <em>Foundations of AI Engineering</em>.
+    The brief was to take one of your own earlier projects and extend it into a
+    complete applied AI system — not to start something new. That constraint turned out
+    to be the useful part, because it meant the thing I was adding an LLM to was code I
+    had already written, tested, and found the limits of.
+  </p>
+
+  <p>The modules built on each other in a way that matters here:</p>
+
+  <table>
+    <thead>
+      <tr><th>Module</th><th>What I built</th><th>What carried forward</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Debugging a deliberately broken AI-written game</td>
+        <td>The habit of treating generated code as a suspect, not a gift</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>A pet-care system designed from a UML diagram first</td>
+        <td>Modular boundaries, and diagrams that match the code</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>The original VibeMatch — content-based recommender, model card, bias analysis</td>
+        <td>The entire scoring engine, unchanged</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>An agentic bug-analysis tool with a risk assessor</td>
+        <td>Plan/act/check structure, and reliability as a first-class concern</td>
+      </tr>
+      <tr>
+        <td>Capstone</td>
+        <td>The AI Concierge layer over Module 3</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    The Module 3 version worked, but it had a flat limitation: the user had to hand-author
+    a Python dictionary of preferences. There was no way for an actual person to just say
+    what they wanted. That's the gap the LLM fills — and, notably, the only gap it fills.
+    Everything else stayed as it was.
+  </p>
+
+  <h2 id="system">The system in one paragraph</h2>
+
+  <p>
+    <a href="https://github.com/abdurahim50/applied-ai-music-recommender" rel="noopener">VibeMatch</a>
+    turns a plain-English request into a ranked playlist. It runs
+    <strong>plan → act → check → explain</strong>: Claude parses the free text into a
+    structured taste profile, a guardrail validates that profile, a deterministic
+    engine scores and ranks every song, and Claude rewrites the real scoring reasons
+    into friendly prose.
+  </p>
+
+  <p>
+    The design rule I set at the start was that the <strong>LLM handles language and
+    deterministic code handles the decision</strong>. The model never picks a song. It
+    only turns words into a profile, and turns scores into sentences. Everything that
+    has to be correct and reproducible stays in plain Python that I can unit-test.
+  </p>
+
+  <div class="callout">
+    Because the ranking is deterministic, the system also has a full offline path —
+    with no API key it parses with keyword matching and explains with templates. Anyone
+    can clone it and get reproducible results without spending a token, and the tests
+    pass either way. Worth being precise about what that does <em>not</em> mean: the two
+    modes don't always agree. A better-parsed profile is a different input, so it can
+    produce a different winner. The engine is deterministic; the profile feeding it isn't
+    fixed. That fallback is also where the bug lived.
+  </div>
+
+  <h2 id="bug">The bug</h2>
+
+  <p>
+    The fallback parser scans the request for a genre and a mood that exist in the
+    catalog. If it finds neither, it has to decide what to do. The first version —
+    which I'd accepted from an AI suggestion because it looked reasonable and the tests
+    passed — did this:
+  </p>
+
+<pre><code># The original. Note the fallbacks on the last two lines.
+def _fallback_parse(query, genres, moods):
+    q = query.lower()
+    genre = next((g for g in genres if g in q), genres[0])   # &lt;--
+    mood  = next((m for m in moods  if m in q), moods[0])    # &lt;--
+    ...</code></pre>
+
+  <p>
+    <code>genres</code> and <code>moods</code> are sorted lists built from the catalog.
+    So <code>genres[0]</code> is <code>"ambient"</code> and <code>moods[0]</code> is
+    <code>"aggressive"</code> — alphabetically first, semantically meaningless.
+  </p>
+
+  <p>
+    Now run the query <em>"something aggressive and intense for a heavy workout."</em>
+    There is no genre word in that sentence. No <code>rock</code>, no
+    <code>metal</code>, no <code>edm</code>. So the parser fell through to
+    <code>genres[0]</code> and decided the user's favourite genre was
+    <strong>ambient</strong>.
+  </p>
+
+  <p>
+    Genre is the heaviest lever in the scoring engine — a genre match is worth
+    <code>+2.0</code>, more than mood and energy combined. So one invented word at the
+    top of the pipeline dragged an ambient track to first place for a workout request.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th></th><th>Before the fix</th><th>After</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Parsed genre</td><td><code>ambient</code> (invented)</td><td><code>None</code></td></tr>
+      <tr><td>Top pick</td><td>an ambient track</td><td>Iron Verdict — metal, energy 0.97</td></tr>
+      <tr><td>Stated reason</td><td>"genre match (+2.0)"</td><td>"mood match (+1.0); energy close to target (+0.93)"</td></tr>
+      <tr><td>Was it wrong?</td><td>Yes</td><td>No</td></tr>
+      <tr><td>Did anything complain?</td><td><strong>No</strong></td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="worse">Why this is worse than a crash</h2>
+
+  <p>
+    A crash is honest. It tells you, at the exact moment and line, that your assumption
+    was wrong. This did the opposite: it produced a plausible-looking answer, attached
+    a confident justification to it, and gave me no signal at all.
+  </p>
+
+  <p>
+    And the justification was the really uncomfortable part. The explanation step is
+    grounded — it's only allowed to talk about reasons the scoring engine actually
+    produced. That grounding worked perfectly. It faithfully reported "genre match."
+    The grounding was doing its job on top of a lie that had been told upstream.
+  </p>
+
+  <blockquote>
+    Grounding an explanation in your system's reasoning only helps if the reasoning is
+    sound. Otherwise you've built something that explains its mistakes persuasively.
+  </blockquote>
+
+  <p>
+    That's the shape of the risk in a lot of LLM products. The generated text isn't the
+    dangerous part. The dangerous part is a confident presentation layer sitting on top
+    of a silent default somewhere further up.
+  </p>
+
+  <h2 id="fix">The fix: refuse to guess</h2>
+
+  <p>
+    The change is two words. Return <code>None</code> instead of the first list item:
+  </p>
+
+<pre><code>genre = next((g for g in genres if g in q), None)
+mood  = next((m for m in moods  if m in q), None)</code></pre>
+
+  <p>
+    And make the guardrail treat <code>None</code> as a legitimate answer meaning
+    <em>no preference</em>, rather than something to fill in:
+  </p>
+
+<pre><code>def validate_profile(profile, genres, moods):
+    """Coerce a profile to values the catalog understands.
+
+    Unknown genre/mood become None ('no preference') rather than a bogus
+    default, so we never invent a match the user did not ask for.
+    """
+    safe = dict(profile)
+    if safe.get("favorite_genre") not in genres:
+        safe["favorite_genre"] = None
+    if safe.get("favorite_mood") not in moods:
+        safe["favorite_mood"] = None
+    try:
+        energy = float(safe.get("target_energy", 0.5))
+    except (TypeError, ValueError):
+        energy = 0.5
+    safe["target_energy"] = max(0.0, min(1.0, energy))
+    safe["likes_acoustic"] = bool(safe.get("likes_acoustic", False))
+    return safe</code></pre>
+
+  <p>
+    With <code>favorite_genre = None</code> the engine simply awards no genre points and
+    ranks on the signals it genuinely has — mood and energy. The workout query now
+    surfaces <em>Iron Verdict</em> (aggressive, energy 0.97) at number one, and its
+    stated reasons mention only mood and energy, because that's all that actually
+    matched.
+  </p>
+
+  <div class="callout">
+    <strong>The same principle upstream.</strong> The Claude parse is constrained by a
+    JSON schema whose <code>favorite_genre</code> and <code>favorite_mood</code> are
+    enums <em>built from the loaded catalog at runtime</em>, not a hardcoded list. The
+    model can't name a genre that doesn't exist, and the allowed values can never drift
+    out of sync with the data. But the guardrail still runs on the model's output
+    anyway — a schema is a request, not a guarantee.
+  </div>
+
+  <h2 id="lock">Locking it down</h2>
+
+  <p>
+    A fix you can't prove is a fix you'll undo in three months. I added an evaluation
+    harness that runs the whole system on fixed inputs and asserts the invariants
+    directly, so the specific failure can't come back quietly:
+  </p>
+
+<pre><code>$ python eval_harness.py
+VibeMatch evaluation harness — 17 songs, 4 end-to-end cases
+
+[PASS] (fallback) 'high energy pop to get hyped at the gym'
+       top: Gym Hero [score 2.97]
+[PASS] (fallback) 'calm acoustic lofi for late-night studying'
+       top: Library Rain [score 3.40]
+[PASS] (fallback) 'chill reggae for a beach afternoon'
+       top: Island Time [score 3.73]
+[PASS] (fallback) 'something aggressive and intense for a heavy workout'
+       top: Iron Verdict [score 1.93]      &lt;-- the regression case
+
+Guardrail unit checks:
+  [PASS] clamps energy 5.0 -&gt; 1.0
+  [PASS] clamps energy -3.0 -&gt; 0.0
+  [PASS] drops unknown genre -&gt; None
+  [PASS] drops unknown mood -&gt; None
+
+Summary: 8/8 checks passed (4/4 cases, 4/4 guardrail).</code></pre>
+
+  <p>
+    Note what the last four assert. Not "does it work" but "does it refuse to invent."
+    Those are the checks that would have caught the original bug, and they're the ones I
+    care about most.
+  </p>
+
+  <h2 id="credits">The other failure — and why it reassured me</h2>
+
+  <p>
+    Partway through testing, my API account ran out of credits mid-run. The call
+    returned <code>400 — credit balance is too low</code>. The system logged a warning,
+    dropped to the fallback parser, and returned the same ranked list:
+  </p>
+
+<pre><code>[WARNING] LLM parse failed (Error code: 400 - ... credit balance is too low ...) - falling back.
+Parsed profile (fallback): {'favorite_genre': 'synthwave', 'favorite_mood': 'moody', ...}
+1. Night Drive Loop by Neon Echo  [score: 3.75]
+   Recommended because genre match (+2.0); mood match (+1.0); energy close to target (+0.75).</code></pre>
+
+  <p>
+    I hadn't planned that test. It was the most useful one I ran. An unplanned outage in
+    a dependency is exactly the condition you never simulate properly, and the system
+    degraded instead of dying — because the fallback was built as a real path from day
+    one rather than bolted on as an <code>except</code> block.
+  </p>
+
+  <p>
+    One smaller thing I noticed while comparing modes: given
+    <code>target_energy = 0.5</code>, Claude described the songs as "mellow" and
+    "laid-back." It correctly cited energy as the matching signal, so the grounding
+    held — but 0.5 is the middle of the range, not the low end. The wording drifted
+    below the number. Nothing broke, and it's the kind of soft inaccuracy that only
+    shows up if you read the output rather than checking that it exists.
+  </p>
+
+  <h2 id="takeaway">What I actually took from this</h2>
+
+  <ul>
+    <li><strong>A default is a decision.</strong> <code>genres[0]</code> looks like
+        defensive programming and is actually a silent assertion about what the user
+        wants. When you don't know, the honest value is "unknown," not the first thing
+        in the list.</li>
+    <li><strong>Passing tests are not evidence of correctness.</strong> The original
+        code passed everything I had. My tests checked that the pipeline returned
+        results; they didn't check that the results were <em>right</em>. I found this by
+        reading actual output.</li>
+    <li><strong>Don't trust generated code because it runs.</strong> I'd accepted that
+        line from an AI suggestion without much thought. It was syntactically fine,
+        idiomatic, and wrong. Code review applies to AI output too — arguably more,
+        because it arrives looking finished.</li>
+    <li><strong>Keep the LLM away from the decision.</strong> The reason this bug was
+        findable and fixable in two words is that the ranking lives in deterministic,
+        inspectable code. If a model had been doing the scoring, "why did an ambient
+        track win a workout query" would have been a much longer afternoon.</li>
+  </ul>
+
+  <p>
+    The course opened with a module about debugging code an AI had written badly on
+    purpose. It ended with me shipping a bug an AI had written subtly, into my own
+    project, and not noticing until I read the output. I don't think that's a failure of
+    the lesson. It's what the lesson was about — the skill isn't spotting obviously bad
+    code, it's staying suspicious of code that looks right.
+  </p>
+
+  <div class="callout">
+    Full source, model card, and evaluation harness:
+    <a href="https://github.com/abdurahim50/applied-ai-music-recommender" rel="noopener">github.com/abdurahim50/applied-ai-music-recommender</a>.
+    Built for <span style="white-space:nowrap">CodePath AI-110</span> — Foundations of AI Engineering.
+  </div>
+
+  <hr>
+
+  <p style="color:var(--text-muted);font-size:.92rem">
+    Corrections welcome — <a href="mailto:yonghoabdurahim@gmail.com">email me</a>.
+  </p>
+
+</article>
+</div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p style="margin:0">&copy; <span data-year>2026</span> Abdurahim Yongho — built for GitHub Pages</p>
+    <nav aria-label="Footer">
+      <a href="../projects.html">Projects</a>
+      <a href="../writeups.html">Writing</a>
+      <a href="../about.html">About</a>
+      <a href="https://github.com/abdurahim50" rel="noopener">GitHub</a>
+      <span style="font-family:var(--font-mono)">exit 0</span>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
