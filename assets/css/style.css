@@ -549,6 +549,9 @@ h2 .num {
   );
 }
 .homelab__diagram img { border-radius: var(--radius); }
+@media (min-width: 820px) {
+  .homelab--no-diagram { grid-template-columns: 1fr; }
+}
 
 .homelab__specs { display: flex; flex-direction: column; gap: .8rem; }
 .homelab__spec {

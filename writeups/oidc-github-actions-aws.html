@@ -152,20 +152,25 @@
       values   = ["sts.amazonaws.com"]
     }
 
-    # Scope to one repo AND one ref. Do not use a bare wildcard here.
+    # Scope to one repo AND one GitHub Environment. Do not use a bare wildcard here.
+    # Must match the workflow below, which runs in the "production" environment.
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:abdurahim50/zen-infra:ref:refs/heads/main"]
+      values   = ["repo:abdurahim50/zen-infra:environment:production"]
     }
   }
 }</code></pre>
 
   <p>
-    For workflows gated behind a GitHub Environment, the <code>sub</code> claim changes
-    shape — it becomes <code>repo:OWNER/REPO:environment:NAME</code>. That is worth
-    preferring, because environments give you required reviewers on top of the branch
-    constraint.
+    When a job declares a GitHub Environment, the <code>sub</code> claim changes shape:
+    it becomes <code>repo:OWNER/REPO:environment:NAME</code> instead of the
+    <code>ref:</code> form. The policy above uses that form because the workflow in
+    Step 3 runs in the <code>production</code> environment. A trust policy scoped to
+    <code>ref:refs/heads/main</code> would reject that job. Environments are worth
+    preferring anyway: add a deployment branch rule limiting
+    <code>production</code> to <code>main</code>, and you get required reviewers on
+    top of the branch constraint.
   </p>
 
   <table>
