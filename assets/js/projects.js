@@ -61,18 +61,6 @@ const PROJECTS = [
     featured: true
   },
   {
-    title: "Kubernetes the Hard Way — kubeadm Multi-Node Cluster",
-    category: "homelab",
-    summary:
-      "Multi-node cluster built from scratch with kubeadm rather than a managed service: certificate distribution, CNI setup, kubelet configuration, and node hardening, documented step by step. Building it manually is what made the managed services legible afterwards.",
-    tags: ["kubeadm", "Linux", "containerd", "CNI", "Kubernetes"],
-    repo: "https://github.com/abdurahim50/kubernetes_multi-nodes_cluster_using_kubeadm",
-    link: "",
-    linkLabel: "",
-    status: "live",
-    featured: true
-  },
-  {
     title: "CI/CD to EKS with Jenkins and AWS CodePipeline",
     category: "devops",
     summary:
@@ -97,42 +85,6 @@ const PROJECTS = [
     featured: false
   },
   {
-    title: "Zen Pharma — GitOps Platform on AWS EKS",
-    category: "cloud",
-    summary:
-      "Four-repo platform taking a pharma web app from source to production on AWS with no console clicks. Terraform modules provision VPC, EKS, RDS, ECR, IAM/IRSA and Secrets Manager; GitHub Actions runs plan and apply behind environment approvals; Argo CD reconciles Helm charts per environment. The runbook takes a new engineer from an empty account to a running cluster in about 90 minutes.",
-    tags: ["Terraform", "AWS EKS", "Argo CD", "Helm", "GitHub Actions"],
-    repo: "https://github.com/abdurahim50/zen-infra",
-    link: "writeups/oidc-github-actions-aws.html",
-    linkLabel: "Read writeup",
-    status: "live",
-    featured: false
-  },
-  {
-    title: "Polyglot Microservices — Supply-Chain Hardened CI/CD",
-    category: "devops",
-    summary:
-      "Three services in three languages (Go, TypeScript, Python) behind a single security-first pipeline. Every GitHub Action is pinned by commit SHA, scanners run as pinned CLIs, images are signed with keyless Cosign and SBOMs are attested. CI never deploys — it pins signed digests into Git and lets Argo CD reconcile, so the deploy path holds no cluster credentials.",
-    tags: ["Go", "TypeScript", "Python", "Cosign", "SBOM"],
-    repo: "https://github.com/abdurahim50/polyglot-microservices",
-    link: "writeups/signing-images-with-cosign.html",
-    linkLabel: "Read writeup",
-    status: "live",
-    featured: false
-  },
-  {
-    title: "Secure Commerce — DevSecOps Reference Pipeline",
-    category: "security",
-    summary:
-      "Two FastAPI microservices used as a testbed for a pipeline that fails closed on security findings: unit tests, linting, dependency audit, SAST, IaC scanning, container image scanning and CodeQL. Ships to ECR and EKS through GitHub Actions OIDC — no static AWS keys in the repo or in org secrets.",
-    tags: ["FastAPI", "GitHub Actions", "CodeQL", "Trivy", "OIDC"],
-    repo: "https://github.com/abdurahim50/secure-commerce-actions",
-    link: "",
-    linkLabel: "",
-    status: "live",
-    featured: false
-  },
-  {
     title: "Django Real-Estate App on DigitalOcean Kubernetes",
     category: "devops",
     summary:
@@ -144,45 +96,6 @@ const PROJECTS = [
     status: "live",
     featured: false
   },
-  {
-    title: "Home SOC — Detection Lab",
-    category: "security",
-    summary:
-      "Splunk ingesting logs from lab VMs and network gear, with Nessus scans and Nmap sweeps driving detection rules and response playbooks. The point is the loop: run a technique, find out whether anything caught it, write the rule that would have.",
-    tags: ["Splunk", "Nessus", "Nmap", "Wireshark", "Detection"],
-    repo: "https://github.com/abdurahim50",
-    link: "",
-    linkLabel: "",
-    status: "wip",
-    starter: true,
-    featured: false
-  },
-  {
-    title: "AWS Threat Detection Pipeline",
-    category: "security",
-    summary:
-      "GuardDuty findings routed through EventBridge into automated Lambda responses — isolate the instance, snapshot the volume, notify — with the whole stack deployed and torn down by Terraform so it costs nothing between exercises.",
-    tags: ["GuardDuty", "EventBridge", "Lambda", "Terraform"],
-    repo: "https://github.com/abdurahim50",
-    link: "",
-    linkLabel: "",
-    status: "wip",
-    starter: true,
-    featured: false
-  },
-  {
-    title: "Reusable Terraform Module Library",
-    category: "cloud",
-    summary:
-      "A personal library of composable Terraform modules — VPC, EKS, EC2, IAM, ASG with load balancer, Lambda, S3 bucket policies — plus a remote state pattern using an S3 backend with DynamoDB locking. Each module ships with example usage and documented variables.",
-    tags: ["Terraform", "AWS", "IaC", "S3 backend", "Modules"],
-    repo: "https://github.com/abdurahim50",
-    link: "",
-    linkLabel: "",
-    status: "live",
-    starter: true,
-    featured: false
-  }
 ];
 
 /* --------------------------------------------------------------------------
