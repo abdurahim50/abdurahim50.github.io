@@ -17,7 +17,7 @@
                           writeups/*.html page. "" to hide.
      linkLabel (string)   Text for the `link` button. Defaults to "Read writeup".
      status    ("live" | "wip" | "")  Renders a badge. "" shows nothing.
-     starter   (boolean)  true = shows a dashed "starter — replace me" badge.
+     starter   (boolean)  true = shows a dashed "write-up in progress" badge.
                           Delete the flag once the entry is genuinely yours.
      featured  (boolean)  true = also shown in Featured strip on index.html.
                           Keep this to 3-4 projects.
@@ -224,7 +224,7 @@ function projectCard(p) {
     );
   }
   if (p.starter) {
-    badges.push('<span class="status status--starter">starter — replace me</span>');
+    badges.push('<span class="status status--starter">write-up in progress</span>');
   }
 
   const links = [];

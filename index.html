@@ -73,7 +73,7 @@
         <h1><span class="grad">Abdurahim Yongho</span></h1>
 
         <p class="lede">
-          Cybersecurity student and IT support specialist building
+          Cybersecurity student at Metropolitan State University building
           <strong style="color:var(--text)">secure, automated infrastructure</strong> —
           Kubernetes clusters, CI/CD pipelines, and cloud environments hardened from
           the first commit. Lately that includes AI systems: shipping an LLM feature
@@ -90,8 +90,6 @@
           </a>
           <a class="btn btn--ghost" href="https://github.com/abdurahim50" rel="noopener">GitHub</a>
           <a class="btn btn--ghost" href="https://www.linkedin.com/in/abdurahim-yongho/" rel="noopener">LinkedIn</a>
-          <!-- EDIT: drop your CV at assets/resume.pdf, or delete this button -->
-          <a class="btn btn--ghost" href="assets/resume.pdf">Resume ↓</a>
         </div>
       </div>
 
@@ -105,10 +103,12 @@
           <div><span class="p">$</span> <span class="c">whoami</span></div>
           <div class="o">abdurahim — devsecops in training</div>
           <div><span class="p">$</span> <span class="c">ls certifications/</span></div>
-          <div class="o">security+.pem&nbsp; network+.pem&nbsp; aws-saa.inprogress</div>
+          <div class="o">security+.pem&nbsp; network+.pem&nbsp; aws-ccp.pem&nbsp; psm-i.pem&nbsp; aws-saa.inprogress</div>
           <div><span class="p">$</span> <span class="c">kubectl get nodes -l env=homelab</span></div>
           <div class="o">3 nodes Ready — kubeadm, self-hosted</div>
-          <div><span class="p">$</span> <span class="c">terraform apply -auto-approve</span><span class="cursor"></span></div>
+          <div><span class="p">$</span> <span class="c">terraform plan -out=tfplan</span></div>
+          <div class="o">Plan: reviewed in PR, approved</div>
+          <div><span class="p">$</span> <span class="c">terraform apply tfplan</span><span class="cursor"></span></div>
         </div>
       </aside>
     </div>
@@ -200,6 +200,8 @@
       <ul class="certs" style="margin-top:1.5rem">
         <li class="earned"><strong>CompTIA Security+</strong></li>
         <li class="earned"><strong>CompTIA Network+</strong></li>
+        <li class="earned"><strong>AWS Certified Cloud Practitioner</strong></li>
+        <li class="earned"><strong>Professional Scrum Master I</strong></li>
         <li class="pending">AWS Solutions Architect – Associate <span class="yr">in progress</span></li>
       </ul>
     </div>
@@ -217,18 +219,8 @@
         they touch anything real.
       </p>
 
-      <div class="homelab">
-        <!-- Replace this whole div with an image once you have a diagram:
-             <div class="homelab__diagram" style="background:none;padding:0">
-               <img src="assets/img/homelab.png" alt="Homelab network diagram: three
-                    Kubernetes nodes behind an Nginx reverse proxy, with Splunk
-                    ingesting logs from a separate lab VLAN">
-             </div>
-             Draw one in draw.io or Excalidraw — a diagram does more for this section
-             than another paragraph would. -->
-        <div class="homelab__diagram">
-          [ drop your homelab network / architecture diagram here ]
-        </div>
+      <div class="homelab homelab--no-diagram">
+        <!-- TODO: add assets/img/homelab.png as a .homelab__diagram block and drop the --no-diagram modifier -->
 
         <dl class="homelab__specs">
           <div class="homelab__spec">
